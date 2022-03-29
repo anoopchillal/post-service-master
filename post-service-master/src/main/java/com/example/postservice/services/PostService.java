@@ -1,5 +1,6 @@
 package com.example.postservice.services;
 
+import com.example.postservice.constants.Constants;
 import com.example.postservice.dto.PostDto;
 import com.example.postservice.exception.PostNotFoundException;
 import com.example.postservice.feign.CommentService;
@@ -59,28 +60,26 @@ public class PostService {
   }
 
   public List<PostDto> allUser(Integer page, Integer pageSize) {
-    if (page == null) {
-      page = 1;
+    if(page==null){
+      page=1;
     }
-    if (pageSize == null) {
-      pageSize = 10;
+    if(pageSize==null){
+      pageSize=10;
     }
-    Pageable firstPage = PageRequest.of(page - 1, pageSize);
-    List<Post> postModels = postRepo.findAll(firstPage).toList();
-    if (postModels.isEmpty()) {
-      throw new PostNotFoundException("Post Does not Exist");
+    Pageable firstPage = PageRequest.of(page-1, pageSize);
+    List<Post> posts= postRepo.findAll(firstPage).toList();
+    if(posts.isEmpty()){
+      throw new PostNotFoundException(Constants.POST_NOT_FOUND);
     }
-    List<PostDto> postDTOS = new ArrayList<>();
-    for (Post post : postModels) {
-      PostDto postDTO = new PostDto(post.getPostID(), post.getPost(),
-              userFeign.findByID(post.getPostedBy()), post.getCreatedAt(),
-              post.getUpdatedAt(), likeFeign.likeCount(post.getPostID()),
+    List<PostDto> postDTOS=new ArrayList<>();
+    for(Post post:posts){
+       PostDto  postDTO = new PostDto(post.getPostID(),post.getPost(),
+              userFeign.findByID(post.getPostedBy()),post.getCreatedAt(),
+              post.getUpdatedAt(),likeFeign.likeCount(post.getPostID()),
               commentFeign.commentCount(post.getPostID()));
       postDTOS.add(postDTO);
     }
-    return postDTOS;
-
-
+    return  postDTOS;
   }
 
   public Post userPost(Post post) {

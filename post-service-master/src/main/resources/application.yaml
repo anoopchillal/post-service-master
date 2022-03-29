@@ -1,10 +1,8 @@
 eureka:
   client:
-    serviceUrl:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
-  instance:
-    preferIpAddress: true
-    hostname: localhost
+    service-url:
+      defaultZone: ${eureka_url:http://172.17.0.3:8761/eureka}
+
 spring:
   application:
     name: post-service
@@ -15,5 +13,16 @@ spring:
     mongodb:
       database: post_db
       port: 27017
+      host: host.docker.internal
 server:
   port: 3010
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "*"
+    endpoint:
+      health:
+        show-details: always
